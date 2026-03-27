@@ -65,6 +65,8 @@ public class Book {
     }
 
     public void display() {
+        String ownerName = getOwner() == null ? "Yok" : getOwner().getName();
+
         System.out.println("ID: " + getBookId() +
                 " | Tür: " + getType() +
                 " | Ad: " + getTitle() +
@@ -72,7 +74,8 @@ public class Book {
                 " | Fiyat: " + getPrice() +
                 " | Baskı: " + getEdition() +
                 " | Satın Alma Tarihi: " + getDateOfPurchase() +
-                " | Durum: " + (isAvailable() ? "Müsait" : "Ödünçte"));
+                " | Durum: " + (isAvailable() ? "Müsait" : "Ödünçte") +
+                " | Sahip: " + ownerName);
     }
 
     public void updateStatus(boolean status) {

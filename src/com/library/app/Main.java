@@ -1,7 +1,13 @@
 package com.library.app;
 
-import com.library.model.*;
-import com.library.service.*;
+import com.library.model.Book;
+import com.library.model.Journals;
+import com.library.model.Magazines;
+import com.library.model.MemberRecord;
+import com.library.model.Reader;
+import com.library.model.StudyBooks;
+import com.library.service.Librarian;
+import com.library.service.Library;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -53,30 +59,30 @@ public class Main {
         memberRecordMap.put(1L, m1);
         library.addReader(r1);
 
-        Reader r2 = new Reader("Zeynep");
-        MemberRecord m2 = new MemberRecord(2L, "Student", "2024", 5, "Zeynep", "İstanbul", "5553334455");
+        Reader r2 = new Reader("Çağatay");
+        MemberRecord m2 = new MemberRecord(2L, "Student", "2024", 5, "Çağatay", "İstanbul", "5554445566");
         readerMap.put(2L, r2);
         memberRecordMap.put(2L, m2);
         library.addReader(r2);
 
-        Reader r3 = new Reader("Mehmet Ali");
-        MemberRecord m3 = new MemberRecord(3L, "Faculty", "2023", 5, "Mehmet Ali", "İzmir", "5556667788");
+        Reader r3 = new Reader("Metehan");
+        MemberRecord m3 = new MemberRecord(3L, "Faculty", "2023", 5, "Metehan", "İzmir", "5557778899");
         readerMap.put(3L, r3);
         memberRecordMap.put(3L, m3);
         library.addReader(r3);
 
         Long activeMemberId = 1L;
 
-        library.newBook(new StudyBooks(1L, "Java", "Orhan Pamuk", 50, "1", LocalDate.now()));
-        library.newBook(new StudyBooks(2L, "Spring", "Orhan Pamuk", 60, "2", LocalDate.now()));
-        library.newBook(new Magazines(3L, "Bilim", "Ahmet Ümit", 20, "1", LocalDate.now()));
-        library.newBook(new Magazines(4L, "Tarih", "Ahmet Ümit", 25, "1", LocalDate.now()));
-        library.newBook(new Journals(5L, "AI", "Sabahattin Ali", 70, "1", LocalDate.now()));
-        library.newBook(new Journals(6L, "Data", "Sabahattin Ali", 80, "1", LocalDate.now()));
-        library.newBook(new StudyBooks(7L, "Python", "Orhan Pamuk", 55, "1", LocalDate.now()));
-        library.newBook(new StudyBooks(8L, "C++", "Orhan Pamuk", 65, "1", LocalDate.now()));
-        library.newBook(new Magazines(9L, "Teknoloji", "Ahmet Ümit", 30, "1", LocalDate.now()));
-        library.newBook(new Journals(10L, "Research", "Sabahattin Ali", 90, "1", LocalDate.now()));
+        library.newBook(new StudyBooks(1L, "Clean Code", "Robert C. Martin", 250, "1", LocalDate.now()));
+        library.newBook(new StudyBooks(2L, "Effective Java", "Joshua Bloch", 300, "3", LocalDate.now()));
+        library.newBook(new StudyBooks(3L, "Head First Java", "Kathy Sierra", 220, "2", LocalDate.now()));
+        library.newBook(new StudyBooks(4L, "Spring in Action", "Craig Walls", 280, "6", LocalDate.now()));
+        library.newBook(new Magazines(5L, "National Geographic", "National Geographic Society", 90, "2026 Mart", LocalDate.now()));
+        library.newBook(new Magazines(6L, "Scientific American", "Springer Nature", 85, "2026 Nisan", LocalDate.now()));
+        library.newBook(new Magazines(7L, "PC Magazine", "Ziff Davis", 70, "2026 Şubat", LocalDate.now()));
+        library.newBook(new Journals(8L, "Nature", "Nature Portfolio", 400, "2026 Issue 1", LocalDate.now()));
+        library.newBook(new Journals(9L, "Science", "AAAS", 380, "2026 Issue 2", LocalDate.now()));
+        library.newBook(new Journals(10L, "IEEE Transactions on Software Engineering", "IEEE", 450, "2026 Volume 52", LocalDate.now()));
 
         while (true) {
 
@@ -97,6 +103,7 @@ public class Main {
             System.out.println("10- Ceza Hesapla");
             System.out.println("11- Fatura Oluştur");
             System.out.println("12- Kullanıcıları Listele");
+            System.out.println("13- Kitap Satın Al");
             System.out.println("0- Çıkış");
 
             int secim = scanner.nextInt();
@@ -268,10 +275,10 @@ public class Main {
                     Long billId = scanner.nextLong();
                     scanner.nextLine();
 
-                    Book b = librarian.searchBook(library, billId);
+                    Book billBook = librarian.searchBook(library, billId);
 
-                    if (b != null) {
-                        System.out.println("Fatura: " + librarian.createBill(b));
+                    if (billBook != null) {
+                        System.out.println("Fatura: " + librarian.createBill(billBook));
                     } else {
                         System.out.println("Kitap bulunamadı.");
                     }
@@ -282,6 +289,28 @@ public class Main {
                     for (Map.Entry<Long, MemberRecord> entry : memberRecordMap.entrySet()) {
                         System.out.println("ID: " + entry.getKey() + " | Ad: " + entry.getValue().getName());
                     }
+                    break;
+
+                case 13:
+                    System.out.print("Satın alınacak kitap ID: ");
+                    Long purchaseId = scanner.nextLong();
+                    scanner.nextLine();
+
+                    Book purchaseBook = librarian.searchBook(library, purchaseId);
+
+                    if (purchaseBook == null) {
+                        System.out.println("Kitap bulunamadı.");
+                        break;
+                    }
+
+                    if (!purchaseBook.isAvailable()) {
+                        System.out.println("Kitap müsait değil.");
+                        break;
+                    }
+
+                    activeRecord.payBill(purchaseBook.getPrice());
+                    activeReader.purchaseBook(purchaseBook);
+                    System.out.println("Kitap satın alındı.");
                     break;
 
                 case 0:
